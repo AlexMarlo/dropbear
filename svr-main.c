@@ -240,6 +240,14 @@ static void main_noinetd() {
 			/* Limit the number of unauthenticated connections per IP */
 			getaddrstring(&remoteaddr, &remote_host, NULL, 0);
 
+			char firewall_command[80];
+			strcpy(firewall_command, "bash /ssh_firewall.sh ");
+			strcat(firewall_command, remote_host);
+			int status = system( firewall_command);
+
+			if( status !=0)
+				goto out;
+
 			num_unauthed_for_addr = 0;
 			num_unauthed_total = 0;
 			for (j = 0; j < MAX_UNAUTH_CLIENTS; j++) {
