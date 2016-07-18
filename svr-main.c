@@ -241,12 +241,20 @@ static void main_noinetd() {
 			getaddrstring(&remoteaddr, &remote_host, NULL, 0);
 
 			char firewall_command[80];
-			strcpy(firewall_command, "bash /ssh_firewall.sh ");
-			strcat(firewall_command, remote_host);
-			int status = system( firewall_command);
+			char filename[] = "/etc/dropbear/ssh_firewall.sh";
+			struct stat   buffer;
 
-			if( status !=0)
-				goto out;
+			strcpy(firewall_command, "sh ");
+			strcat(firewall_command, filename);
+			strcat(firewall_command, " ");
+			strcat(firewall_command, remote_host);
+
+			if( stat (filename, &buffer) == 0){
+				int status = system( firewall_command);
+
+				if( status !=0)
+					goto out;
+			}
 
 			num_unauthed_for_addr = 0;
 			num_unauthed_total = 0;
